@@ -10,9 +10,6 @@ RUN set -e && \
         ca-certificates \
         build-essential \
         pkg-config \
-        libglib2.0-dev \
-        libssl-dev \
-        openssl \
         wget \
         git \
         gengetopt \
@@ -21,6 +18,9 @@ RUN set -e && \
         automake \
         libtool \
         libconfig-dev \
+        libglib2.0-dev \
+        openssl \
+        libssl-dev \
         libjansson-dev \
         libmicrohttpd-dev \
         libcurl4-openssl-dev \
