@@ -21,7 +21,8 @@ RUN set -e && \
         automake \
         libtool \
         libconfig-dev \
-        libyaml-cpp-dev \
+        libjson-glib-1.0-0 \
+        libjson-glib-dev \
         gstreamer1.0-doc \
         gstreamer1.0-tools \
         gstreamer1.0-libav \
@@ -46,7 +47,7 @@ RUN set -e && \
     cd rtspd && \
     make && make install && \
     mkdir -p /etc/rtspd && \
-    cp *.yaml /etc/rtspd/ && \
+    cp *.json /etc/rtspd/ && \
     cd /opt && rm -rf rtspd && \
     set +e
 
