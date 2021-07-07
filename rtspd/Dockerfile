@@ -57,4 +57,4 @@ EXPOSE 8554
 
 COPY ./docker-entrypoint.sh /
 ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["rtspd", "-c", "/etc/rtspd/rtspd.yaml"]
+CMD ["rtspd", "-c", "/etc/rtspd/rtspd.json"]
