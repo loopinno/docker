@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/httpd"
-VERSION="10.24.1"
-BASE="arm64v8/ubuntu:18.04"
+TAG="latest"
+ARCH=""
 
 function usage()
 {
@@ -10,8 +10,8 @@ cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
     -h, --help                          Display this help and exit.
-    -v, --version <0.0.0>               Specify the version.
-    -b, --base <arm64v8/ubuntu:18.04>   Specify the base image.
+    -t, --tag <0.1.0 | latest>          Specify the tag of the image.
+    -a, --arch <amd64 | arm64>          Specify the architecture.
 EOF
 exit 0
 }
@@ -22,11 +22,11 @@ do
     -h | --help )       usage
                         exit
                         ;;
-    -v | --version )    shift
-                        VERSION=$1
+    -t | --tag )        shift
+                        TAG=$1
                         ;;
-    -b | --base )       shift
-                        BASE=$1
+    -a | --arch )       shift
+                        ARCH=$1
                         ;;
     *)                  usage
                         exit 1
@@ -34,29 +34,10 @@ do
     shift
 done
 
-echo "VERSION: ${VERSION}"
-echo "BASE: ${BASE}"
-
-TAG="${VERSION}-${BASE//[$'/':]/-}"
-echo "TAG: ${TAG}"
-
-## dev
-IMAGE="${REPO}:${TAG}-dev"
-echo "IMAGE: ${IMAGE}"
-
-docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
-    --target="dev" \
-    -t ${IMAGE} \
-    .
-    
-## runtime
 IMAGE="${REPO}:${TAG}"
+if [ -n "$ARCH" ] ; then 
+    IMAGE="${IMAGE}-${ARCH}"
+fi 
 echo "IMAGE: ${IMAGE}"
 
-docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
-    -t ${IMAGE} \
-    .
+docker build -t ${IMAGE} .
