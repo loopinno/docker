@@ -1,28 +1,29 @@
-ARG BASE=docker.io/arm64v8/ubuntu:18.04
+ARG BASE="arm64v8/ubuntu:18.04"
+ARG VERSION="0.0.0"
 
-FROM $BASE
-LABEL maintainer "Loopinno"
+FROM $BASE AS dev
+ARG BASE
+ARG VERSION
 
 # install build tools and dependencies
 RUN set -e && \
     apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
+    apt-get install -y \
         build-essential \
-        pkg-config \
-        libglib2.0-dev \
-        libssl-dev \
-        openssl \
         wget \
         git \
+        pkg-config \
         gengetopt \
         autogen \
         autoconf \
         automake \
         libtool \
         libconfig-dev \
+        libglib2.0-dev \
         libjson-glib-1.0-0 \
-        libjson-glib-dev \
+        libjson-glib-dev \       
+        openssl \
+        libssl-dev \
         gstreamer1.0-doc \
         gstreamer1.0-tools \
         gstreamer1.0-libav \
@@ -40,7 +41,7 @@ RUN set -e && \
     && rm -rf /var/lib/apt/lists/* \
     && set +e
 
-## rtspd from source code 
+## rtsp from source code 
 RUN set -e && \
     cd /opt && \
     git clone https://github.com/loopinno/rtspd.git && \
@@ -48,7 +49,13 @@ RUN set -e && \
     make && make install && \
     mkdir -p /etc/rtspd && \
     cp *.json /etc/rtspd/ && \
-    cd /opt && rm -rf rtspd && \
+    set +e
+
+FROM dev
+
+## runtime only
+RUN set -e && \
+    cd /opt && rm -rf rtspd \
     set +e
 
 RUN useradd --user-group --system rtspd

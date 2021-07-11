@@ -1,17 +1,18 @@
-ARG BASE=docker.io/arm64v8/ubuntu:18.04
+ARG BASE="arm64v8/ubuntu:18.04"
+ARG VERSION="0.11.3"
 
-FROM $BASE
-LABEL maintainer "Loopinno"
+FROM $BASE AS dev
+ARG BASE
+ARG VERSION
 
 # install build tools and dependencies
 RUN set -e && \
     apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
+    apt-get install -y \
         build-essential \
-        pkg-config \
         wget \
         git \
+        pkg-config \
         gengetopt \
         autogen \
         autoconf \
@@ -29,6 +30,7 @@ RUN set -e && \
     && rm -rf /var/lib/apt/lists/* \
     && set +e
 
+## libnice from source code 
 ## 0.1.16 is the last version using the make tool by default
 ## following version start to use meson
 RUN set -e && \
@@ -38,7 +40,6 @@ RUN set -e && \
     cd libnice-0.1.16 && \
     ./configure && \
     make && make install && \
-    cd /opt && rm -rf libnice-0.1.16 && \
     set +e
 
 ## libsrtp2 from source code
@@ -49,21 +50,29 @@ RUN set -e && \
     cd libsrtp-2.2.0 && \
     ./configure --enable-openssl && \
     make shared_library  && make install && \
-    cd /opt && rm -rf libsrtp-2.2.0 && \
     set +e
 
 ## janus from source code 
 RUN set -e && \
     cd /opt && \
-    git clone https://github.com/meetecho/janus-gateway.git && \
+    git clone -b v${VERSION} --depth 1 https://github.com/meetecho/janus-gateway.git && \
     cd janus-gateway && \
     ./autogen.sh && \
     ./configure && \
     make && make install && make configs && \
     mkdir -p /etc/janus && \
     cp /usr/local/etc/janus/*.jcfg /etc/janus/ && \
-    cd /opt && rm -rf janus-gateway && \
     set +e
+
+FROM dev 
+
+## runtime only 
+RUN set -e && \
+    cd /opt && \
+    rm -rf libnice-0.1.16 && \
+    rm -rf libsrtp-2.2.0 && \
+    rm -rf janus-gateway && \
+    set +e 
 
 RUN useradd --user-group --system janus
 

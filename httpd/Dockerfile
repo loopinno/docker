@@ -1,13 +1,14 @@
-ARG BASE=docker.io/arm64v8/ubuntu:18.04
+ARG BASE="arm64v8/ubuntu:18.04"
+ARG VERSION="10.24.1"
 
-FROM $BASE
-LABEL maintainer "Loopinno"
+FROM $BASE AS dev
+ARG BASE
+ARG VERSION
 
 # install build tools and dependencies
 RUN set -e && \
     apt-get update && \
-    apt-get install -y --no-install-recommends \
-        ca-certificates \
+    apt-get install -y \
         wget \
         xz-utils \
     && rm -rf /var/lib/apt/lists/* \
@@ -15,15 +16,17 @@ RUN set -e && \
 
 RUN set -e && \
     cd /opt && \
-    wget --show-progress --progress=bar:force -O node.tar.xz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-arm64.tar.xz && \
-    tar -C /usr/local --strip-components 1 -xJf node.tar.xz && \
-    rm node.tar.xz && \
+    wget --show-progress --progress=bar:force https://nodejs.org/dist/v${VERSION}/node-v${VERSION}-linux-arm64.tar.xz && \
+    tar -C /usr/local --strip-components 1 -xJf node-v${VERSION}-linux-arm64.tar.xz && \
+    rm node-v${VERSION}-linux-arm64.tar.xz && \
     set +e 
 
 RUN set -e && \
     npm -g install -y http-server && \
     mkdir -p /etc/httpd && \
     set +e 
+
+FROM dev
 
 RUN useradd --user-group --system httpd
 

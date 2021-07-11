@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-REPO="loopinno/httpd"
-VERSION="10.24.1"
+REPO="loopinno/grpc"
+VERSION="1.38.1"
 BASE="arm64v8/ubuntu:18.04"
 
 function usage()
