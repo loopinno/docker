@@ -8,7 +8,7 @@ ARG VERSION
 # install build tools and dependencies
 RUN set -e && \
     apt-get update && \
-    apt-get install -y 
+    apt-get install -y \
         build-essential \
         git \
         pkg-config \

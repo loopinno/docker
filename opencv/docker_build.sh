@@ -41,7 +41,7 @@ done
 
 echo "VERSION: ${VERSION}"
 echo "BASE: ${BASE}"
-echo "REVISON: ${REVISON}"
+echo "REVISON: ${REVISION}"
 
 TAG="${VERSION}-${BASE//[$'/':]/-}"
 DOCKERFILE="Dockerfile"
