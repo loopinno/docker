@@ -1,4 +1,5 @@
 ARG BASE="ubuntu:18.04"
+ARG ARCH="x64"
 
 FROM $BASE
 
@@ -11,7 +12,7 @@ RUN apt-get update && \
 
 WORKDIR /opt 
  
-RUN wget --show-progress --progress=bar:force -O node.tar.gz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-x64.tar.gz && \
+RUN wget --show-progress --progress=bar:force -O node.tar.gz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-${ARCH}.tar.gz && \
     tar -C /usr/local --strip-components 1 -xzf  node.tar.gz && \
     rm node.tar.gz 
 

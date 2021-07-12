@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/httpd"
-VERSION=""
+VERSION="1.0.0"
 BASE="ubuntu:18.04"
 
 function usage()
@@ -9,9 +9,9 @@ function usage()
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                      Display this help and exit.
-    -v, --version [0.0.0 | latest]  Specify the version of the image.
-    -b, --base [ubuntu:18.04]       Specify the base image.
+    -h, --help                  Display this help and exit.
+    -v, --version [0.0.0]       Specify the version of the image.
+    -b, --base [ubuntu:18.04]   Specify the base image.
 EOF
 exit 0
 }
@@ -34,14 +34,9 @@ do
     shift
 done
 
-IMAGE="${REPO}"
-if [ -z "${VERSION}" ] ; then 
-    IMAGE="${IMAGE}:latest"
-else 
-    IMAGE="${IMAGE}:${VERSION}"
-fi 
-IMAGE="${IMAGE}-${BASE//[$'/':]/-}"
+IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
+echo "BASE: ${BASE}"
 
 docker build \
     --build-arg BASE=${BASE} \

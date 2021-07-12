@@ -2,19 +2,16 @@
 
 REPO="loopinno/envoy"
 VERSION="1.18.3"
-SYSTEM="ubuntu:18.04"
-ARCH="arm64v8"
+BASE="ubuntu:18.04"
 
-# Display help 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
     -h, --help                  Display this help and exit.
-    -v, --version <0.0.0>       Specify the version.
-    -s, --system <ubuntu:18.04> Specify the operating system.
-    -a, --arch <arm64v8>        Specify the architecture.
+    -v, --version [0.0.0]       Specify the version of the image.
+    -b, --base [ubuntu:18.04]   Specify the base image.
 EOF
 exit 0
 }
@@ -28,11 +25,8 @@ do
     -v | --version )    shift
                         VERSION=$1
                         ;;
-    -s | --system )     shift
-                        SYSTEM=$1
-                        ;;
-    -a | --arch )       shift
-                        ARCH=$1
+    -b | --base )       shift
+                        BASE=$1
                         ;;
     *)                  usage
                         exit 1
@@ -40,33 +34,11 @@ do
     shift
 done
 
-echo "VERSION: ${VERSION}"
-echo "SYSTEM: ${SYSTEM}"
-echo "ARCH: ${ARCH}"
-
-TAG="${VERSION}-${SYSTEM//:/$'-'}-${ARCH}"
-echo "TAG: ${TAG}"
-
-BASE="${ARCH}/${SYSTEM}"
-echo "BASE: ${BASE}"
-
-## dev
-IMAGE="${REPO}:${TAG}-dev"
+IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
 docker build \
     --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
-    --target="dev" \
-    -t ${IMAGE} \
-    .
-
-## envoy
-IMAGE="${REPO}:${TAG}"
-echo "IMAGE: ${IMAGE}"
-
-docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
+    --build-arg VERSION=${VERSION} \
     -t ${IMAGE} \
     .

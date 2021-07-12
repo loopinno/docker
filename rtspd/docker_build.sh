@@ -34,16 +34,13 @@ do
     shift
 done
 
-IMAGE="${REPO}"
-if [ -z "${VERSION}" ] ; then 
-    IMAGE="${IMAGE}:latest"
-else 
-    IMAGE="${IMAGE}:${VERSION}"
-fi 
-IMAGE="${IMAGE}-${BASE//[$'/':]/-}"
+echo "BASE: ${BASE}"
+
+IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
 docker build \
     --build-arg BASE=${BASE} \
+    --build-arg VERSION=${VERSION} \
     -t ${IMAGE} \
     .

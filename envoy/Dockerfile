@@ -1,14 +1,14 @@
-ARG BASE="arm64v8/ubuntu:18.04"
+ARG BASE="loopinno/bazel:4.1.0-ubuntu-18.04"
 ARG VERSION="1.18.3"
 
-FROM $BASE AS dev
+FROM $BASE AS build
 ARG BASE
 ARG VERSION
 
-## install dependencies 
-RUN set -e && \
-    apt-get update && \
-    apt-get install -y \
+## install build tools and dependencies 
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
         build-essential \
         wget \
         git \
@@ -29,24 +29,18 @@ RUN set -e && \
         python3 \
         python3-pip \
     && ln -s /usr/bin/python3 /usr/bin/python \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && set +e
+    && rm -rf /var/lib/apt/lists/*
 
-## install Bazel  
-COPY --from=loopinno/bazel:4.1.0-ubuntu-18.04-arm64v8 /usr/local/bin/bazel /usr/local/bin
+# build Envoy from source code 
+WORKDIR /opt
+RUN git clone -b v${VERSION} --depth 1 https://github.com/envoyproxy/envoy.git && \
+    cd envoy && \
+    bazel build --jobs=3 -c opt //source/exe:envoy-static 
 
-## build Envoy from source code 
-# RUN set -e && \
-#     cd /opt && \
-#     git clone https://github.com/envoyproxy/envoy.git -b v${VERSION} --depth 1 && \
-#     cd envoy && \
-#     bazel build --jobs=3 -c opt //source/exe:envoy-static && \
-#     set +e 
+# FROM $BASE
 
-FROM $BASE
-
-## install Envoy  
+# envoy runtime 
+WORKDIR /opt 
+RUN rm -rf envoy 
 
 CMD ["/bin/bash"]

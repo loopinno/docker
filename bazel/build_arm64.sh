@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-REPO="loopinno/janus"
-VERSION="0.11.3"
+REPO="loopinno/bazel"
+VERSION="4.1.0"
 BASE="ubuntu:18.04"
 
 function usage()

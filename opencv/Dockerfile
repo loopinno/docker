@@ -1,14 +1,14 @@
-ARG BASE="nvcr.io/nvidia/l4t-base:r32.4.4"
+ARG BASE="ubuntu:18.04"
 ARG VERSION="4.4.0"
 
-FROM $BASE AS dev
+FROM $BASE AS build
 ARG BASE
 ARG VERSION
 
 # install build tools and dependencies
-RUN set -e && \
-    apt-get update && \
-    apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
         build-essential \
         git \
         pkg-config \
@@ -44,21 +44,17 @@ RUN set -e && \
         libgstreamer-plugins-base1.0-dev \
         libgstrtspserver-1.0 \
         libgstrtspserver-1.0-dev \
-    && rm -rf /var/lib/apt/lists/* \
-    && set +e
+    && rm -rf /var/lib/apt/lists/* 
 
 # upgrade cmake 
-RUN set -e && \
-    cd /opt && \
-    wget --show-progress --progress=bar:force -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.sh && \
+WORKDIR /opt
+RUN wget --show-progress --progress=bar:force -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.sh && \
     sh cmake-linux.sh -- --skip-license --prefix=/usr && \
-    rm cmake-linux.sh && \
-    set +e 
+    rm cmake-linux.sh 
 
 # opencv from source code 
-RUN set -e && \
-    cd /opt && \
-    git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
+WORKDIR /opt
+RUN git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
     git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv_contrib.git && \
     cd opencv && \
     mkdir build && cd build && \
@@ -97,16 +93,12 @@ RUN set -e && \
         -D INSTALL_C_EXAMPLES=OFF \
         -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
         .. && \ 
-    make -j"$(nproc)" && make install && ldconfig && \
-    set +e 
+    make -j"$(nproc)" && make install && ldconfig 
 
-FROM dev 
+# FROM $BASE 
 
-# runtime only 
-RUN set -e && \
-    cd /opt && \
-    rm -rf opencv && \
-    rm -rf opencv_contrib && \
-    set +e 
+# OpenCV runtime  
+RUN rm -rf opencv && \
+    rm -rf opencv_contrib 
 
 CMD ["/bin/bash"]
