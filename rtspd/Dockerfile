@@ -1,7 +1,8 @@
 ARG BASE="ubuntu:18.04"
 ARG VERSION="1.0.0"
 
-FROM $BASE
+FROM $BASE AS build
+ARG BASE
 ARG VERSION
 
 # install build tools and dependencies
@@ -37,14 +38,26 @@ RUN apt-get update && \
         libgstrtspserver-1.0-dev \
     && rm -rf /var/lib/apt/lists/* 
 
-WORKDIR /opt 
-
-## rtsp from source code 
+## rtspd from source code 
+WORKDIR /opt
 RUN git clone -b ${VERSION} --depth 1 https://github.com/loopinno/rtspd.git && \
     cd rtspd && \
     make && make install && \
     mkdir -p /etc/rtspd && \
     cp *.json /etc/rtspd/
+
+FROM $BASE
+
+# install build tools and dependencies
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        libgstrtspserver-1.0 \
+    && rm -rf /var/lib/apt/lists/* 
+
+## rtspd runtime  
+WORKDIR /opt
+RUN rm -rf rtspd
+COPY --from build /usr/local/bin/rtspd /usr/local/bin/
 
 RUN useradd --user-group --system rtspd
 EXPOSE 8554
