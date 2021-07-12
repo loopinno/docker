@@ -43,6 +43,6 @@ echo "BASE: ${BASE}"
 docker build \
     --build-arg BASE=${BASE} \
     --build-arg VERSION="${VERSION}" \
-    -f "Dockerfile.ridgerun"
+    -f "Dockerfile.ridgerun" \
     -t ${IMAGE} \
     .

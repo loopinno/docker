@@ -2,6 +2,7 @@ ARG BASE="ubuntu:18.04"
 ARG ARCH="x64"
 
 FROM $BASE
+ARG ARCH
 
 # install build tools and dependencies
 RUN apt-get update && \
