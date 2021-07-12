@@ -43,6 +43,6 @@ echo "BASE: ${BASE}"
 docker build \
     --build-arg BASE=${BASE} \
     --build-arg VERSION="${VERSION}" \
-    --build-arg ARCH="aarch64" \
+    --build-arg CUDA_ARCH_BIN="5.3,6.2,7.2" \
     -t ${IMAGE} \
     .

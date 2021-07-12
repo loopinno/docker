@@ -1,11 +1,11 @@
 ARG BASE="ubuntu:18.04"
 ARG VERSION="4.4.0"
-ARG ARCH="x86_64"
+ARG CUDA_ARCH_BIN="5.0,5.2,6.0,6.1,7.0,7.5,8.6"
 
 FROM $BASE AS build
 ARG BASE
 ARG VERSION
-ARG ARCH
+ARG CUDA_ARCH_BIN
 
 # install build tools and dependencies
 RUN apt-get update && \
@@ -13,6 +13,7 @@ RUN apt-get update && \
         ca-certificates \
         build-essential \
         git \
+        make \
         pkg-config \
         libgtk-3-dev \
         libtbb2 \
@@ -48,12 +49,6 @@ RUN apt-get update && \
         libgstrtspserver-1.0-dev \
     && rm -rf /var/lib/apt/lists/* 
 
-# upgrade cmake 
-WORKDIR /opt
-RUN wget --show-progress --progress=bar:force -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-${ARCH}.sh && \
-    sh cmake-linux.sh -- --skip-license --prefix=/usr && \
-    rm cmake-linux.sh 
-
 # opencv from source code 
 WORKDIR /opt
 RUN git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
@@ -75,7 +70,7 @@ RUN git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
         -D WITH_CUDA=ON \
         -D WITH_CUBLAS=ON \
         -D CUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda \
-        -D CUDA_ARCH_BIN="5.3,6.2,7.2" \
+        -D CUDA_ARCH_BIN=${CUDA_ARCH_BIN} \
         -D CUDA_ARCH_PTX="" \
         -D WITH_GSTREAMER=ON \
         -D WITH_GSTREAMER_0_10=OFF \
