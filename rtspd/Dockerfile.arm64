@@ -52,6 +52,7 @@ FROM $BASE
 # install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        libjson-glib-1.0-0 \
         libgstrtspserver-1.0 \
     && rm -rf /var/lib/apt/lists/* 
 
