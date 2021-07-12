@@ -1,4 +1,6 @@
-FROM arm64v8/ubuntu:18.04
+ARG BASE="arm64v8/ubuntu:18.04"
+
+FROM $BASE
 
 # install build tools and dependencies
 RUN apt-get update && \
