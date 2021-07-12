@@ -48,7 +48,7 @@ RUN git clone -b ${VERSION} --depth 1 https://github.com/loopinno/rtspd.git && \
 
 FROM $BASE
 
-# install build tools and dependencies
+# install dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
         libgstrtspserver-1.0 \
