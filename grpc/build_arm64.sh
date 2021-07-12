@@ -43,5 +43,6 @@ echo "BASE: ${BASE}"
 docker build \
     --build-arg BASE=${BASE} \
     --build-arg VERSION=${VERSION} \
+    --build-arg ARCH="aarch64" \
     -t ${IMAGE} \
     .

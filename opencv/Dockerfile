@@ -1,9 +1,11 @@
 ARG BASE="ubuntu:18.04"
 ARG VERSION="4.4.0"
+ARG ARCH="x86_64"
 
 FROM $BASE AS build
 ARG BASE
 ARG VERSION
+ARG ARCH
 
 # install build tools and dependencies
 RUN apt-get update && \
@@ -48,7 +50,7 @@ RUN apt-get update && \
 
 # upgrade cmake 
 WORKDIR /opt
-RUN wget --show-progress --progress=bar:force -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-aarch64.sh && \
+RUN wget --show-progress --progress=bar:force -O cmake-linux.sh https://github.com/Kitware/CMake/releases/download/v3.20.5/cmake-3.20.5-linux-${ARCH}.sh && \
     sh cmake-linux.sh -- --skip-license --prefix=/usr && \
     rm cmake-linux.sh 
 
