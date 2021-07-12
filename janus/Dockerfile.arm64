@@ -1,4 +1,4 @@
-ARG BASE="ubuntu:18.04"
+ARG BASE="arm64v8/ubuntu:18.04"
 ARG VERSION="0.11.3"
 
 FROM $BASE AS build

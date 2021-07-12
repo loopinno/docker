@@ -51,13 +51,14 @@ FROM $BASE
 # install build tools and dependencies
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
+        libjson-glib-1.0-0 \
         libgstrtspserver-1.0 \
     && rm -rf /var/lib/apt/lists/* 
 
 ## rtspd runtime  
 WORKDIR /opt
 RUN rm -rf rtspd
-COPY --from build /usr/local/bin/rtspd /usr/local/bin/
+COPY --from=build /usr/local/bin/rtspd /usr/local/bin/
 
 RUN useradd --user-group --system rtspd
 EXPOSE 8554
