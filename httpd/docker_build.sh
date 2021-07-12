@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/httpd"
-TAG="latest"
-ARCH=""
+VERSION=""
+BASE="ubuntu:18.04"
 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                          Display this help and exit.
-    -t, --tag <0.1.0 | latest>          Specify the tag of the image.
-    -a, --arch <amd64 | arm64>          Specify the architecture.
+    -h, --help                      Display this help and exit.
+    -v, --version [0.0.0 | latest]  Specify the version of the image.
+    -b, --base [ubuntu:18.04]       Specify the base image.
 EOF
 exit 0
 }
@@ -22,11 +22,11 @@ do
     -h | --help )       usage
                         exit
                         ;;
-    -t | --tag )        shift
-                        TAG=$1
+    -v | --version )    shift
+                        VERSION=$1
                         ;;
-    -a | --arch )       shift
-                        ARCH=$1
+    -b | --base )       shift
+                        BASE=$1
                         ;;
     *)                  usage
                         exit 1
@@ -34,10 +34,16 @@ do
     shift
 done
 
-IMAGE="${REPO}:${TAG}"
-if [ -n "$ARCH" ] ; then 
-    IMAGE="${IMAGE}-${ARCH}"
+IMAGE="${REPO}"
+if [ -z "${VERSION}" ] ; then 
+    IMAGE="${IMAGE}:latest"
+else 
+    IMAGE="${IMAGE}:${VERSION}"
 fi 
+IMAGE="${IMAGE}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
-docker build -t ${IMAGE} .
+docker build \
+    --build-arg BASE=${BASE} \
+    -t ${IMAGE} \
+    .

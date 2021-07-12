@@ -1,6 +1,4 @@
-ARG BASE="ubuntu:18.04"
-
-FROM $BASE
+FROM arm64v8/ubuntu:18.04
 
 # install build tools and dependencies
 RUN apt-get update && \
@@ -11,7 +9,7 @@ RUN apt-get update && \
 
 WORKDIR /opt 
  
-RUN wget --show-progress --progress=bar:force -O node.tar.gz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-x64.tar.gz && \
+RUN wget --show-progress --progress=bar:force -O node.tar.gz https://nodejs.org/dist/v10.24.1/node-v10.24.1-linux-arm64.tar.gz && \
     tar -C /usr/local --strip-components 1 -xzf  node.tar.gz && \
     rm node.tar.gz 
 
