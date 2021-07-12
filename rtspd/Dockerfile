@@ -1,14 +1,13 @@
-ARG BASE="arm64v8/ubuntu:18.04"
-ARG VERSION="0.0.0"
+ARG BASE="ubuntu:18.04"
+ARG VERSION="1.0.0"
 
-FROM $BASE AS dev
-ARG BASE
+FROM $BASE
 ARG VERSION
 
 # install build tools and dependencies
-RUN set -e && \
-    apt-get update && \
-    apt-get install -y \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
         build-essential \
         wget \
         git \
@@ -36,30 +35,18 @@ RUN set -e && \
         libgstreamer-plugins-base1.0-dev \
         libgstrtspserver-1.0 \
         libgstrtspserver-1.0-dev \
-    && apt-get autoremove -y \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && set +e
+    && rm -rf /var/lib/apt/lists/* 
+
+WORKDIR /opt 
 
 ## rtsp from source code 
-RUN set -e && \
-    cd /opt && \
-    git clone https://github.com/loopinno/rtspd.git && \
+RUN git clone -b ${VERSION} --depth 1 https://github.com/loopinno/rtspd.git && \
     cd rtspd && \
     make && make install && \
     mkdir -p /etc/rtspd && \
-    cp *.json /etc/rtspd/ && \
-    set +e
-
-FROM dev
-
-## runtime only
-RUN set -e && \
-    cd /opt && rm -rf rtspd \
-    set +e
+    cp *.json /etc/rtspd/
 
 RUN useradd --user-group --system rtspd
-
 EXPOSE 8554
 
 COPY ./docker-entrypoint.sh /

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/rtspd"
-VERSION="0.0.0"
-BASE="arm64v8/ubuntu:18.04"
+VERSION="1.0.0"
+BASE="ubuntu:18.04"
 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                          Display this help and exit.
-    -v, --version <0.0.0>               Specify the version.
-    -b, --base <arm64v8/ubuntu:18.04>   Specify the base image.
+    -h, --help                      Display this help and exit.
+    -v, --version [0.0.0 | latest]  Specify the version of the image.
+    -b, --base [ubuntu:18.04]       Specify the base image.
 EOF
 exit 0
 }
@@ -34,29 +34,16 @@ do
     shift
 done
 
-echo "VERSION: ${VERSION}"
-echo "BASE: ${BASE}"
-
-TAG="${VERSION}-${BASE//[$'/':]/-}"
-echo "TAG: ${TAG}"
-
-## dev
-IMAGE="${REPO}:${TAG}-dev"
+IMAGE="${REPO}"
+if [ -z "${VERSION}" ] ; then 
+    IMAGE="${IMAGE}:latest"
+else 
+    IMAGE="${IMAGE}:${VERSION}"
+fi 
+IMAGE="${IMAGE}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
 docker build \
     --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
-    --target="dev" \
-    -t ${IMAGE} \
-    .
-    
-## runtime
-IMAGE="${REPO}:${TAG}"
-echo "IMAGE: ${IMAGE}"
-
-docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION="${VERSION}" \
     -t ${IMAGE} \
     .
