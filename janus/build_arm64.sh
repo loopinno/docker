@@ -2,16 +2,16 @@
 
 REPO="loopinno/janus"
 VERSION="0.11.3"
-BASE="ubuntu:18.04"
+BASE="arm64v8/ubuntu:18.04"
 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                      Display this help and exit.
-    -v, --version [0.0.0 | latest]  Specify the version of the image.
-    -b, --base [ubuntu:18.04]       Specify the base image.
+    -h, --help                          Display this help and exit.
+    -v, --version [0.0.0 | latest]      Specify the version of the image.
+    -b, --base [arm64v8/ubuntu:18.04]   Specify the base image.
 EOF
 exit 0
 }
@@ -43,7 +43,12 @@ fi
 IMAGE="${IMAGE}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
+DOCKERFILE="Dockerfile.arm64"
+echo "DOCKERFILE: ${DOCKERFILE}"
+
 docker build \
     --build-arg BASE=${BASE} \
+    --build-arg VERSION=${VERSION} \
+    -f ${DOCKERFILE} \
     -t ${IMAGE} \
     .
