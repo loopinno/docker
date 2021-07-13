@@ -13,7 +13,7 @@ RUN apt-get update && \
         ca-certificates \
         build-essential \
         git \
-        make \
+        cmake \
         pkg-config \
         libgtk-3-dev \
         libtbb2 \
