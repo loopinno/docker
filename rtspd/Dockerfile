@@ -1,5 +1,5 @@
 ARG BASE="ubuntu:18.04"
-ARG VERSION="1.0.0"
+ARG VERSION="1.0.1"
 
 FROM $BASE AS build
 ARG BASE
@@ -21,7 +21,7 @@ RUN apt-get update && \
         libconfig-dev \
         libglib2.0-dev \
         libjson-glib-1.0-0 \
-        libjson-glib-dev \       
+        libjson-glib-dev \
         openssl \
         libssl-dev \
         gstreamer1.0-doc \
@@ -59,6 +59,7 @@ RUN apt-get update && \
 WORKDIR /opt
 RUN rm -rf rtspd
 COPY --from=build /usr/local/bin/rtspd /usr/local/bin/
+COPY --from=build /etc/rtspd/* /etc/rtspd/
 
 RUN useradd --user-group --system rtspd
 EXPOSE 8554

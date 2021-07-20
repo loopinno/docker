@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/rtspd"
-VERSION="1.0.0"
+VERSION="1.0.1"
 BASE="ubuntu:18.04"
 
 function usage()
