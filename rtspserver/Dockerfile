@@ -16,7 +16,7 @@ RUN apt-get update && \
 
 ## rtspserver from source code 
 WORKDIR /opt
-RUN git clone --depth 1 https://github.com/maoxuli/rtspserver.git && \
+RUN git clone --depth 1 https://github.com/loopinno/rtspserver.git && \
     cd rtspserver && \
     make && make install && \
     mkdir -p /etc/rtspserver && cp *.json /etc/rtspserver/
