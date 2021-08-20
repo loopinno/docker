@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 
-REPO="loopinno/rtspd"
-VERSION="1.0.1"
-BASE="ubuntu:18.04"
+REPO="loopinno/rtspserver"
+BASE="arm64v8/ubuntu:18.04"
 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                      Display this help and exit.
-    -v, --version [0.0.0 | latest]  Specify the version of the image.
-    -b, --base [ubuntu:18.04]       Specify the base image.
+    -h, --help                  Display this help and exit.
+    -b, --base [ubuntu:18.04]   Specify the base image.
 EOF
 exit 0
 }
@@ -21,9 +19,6 @@ do
     case "$1" in
     -h | --help )       usage
                         exit
-                        ;;
-    -v | --version )    shift
-                        VERSION=$1
                         ;;
     -b | --base )       shift
                         BASE=$1
@@ -36,11 +31,19 @@ done
 
 echo "BASE: ${BASE}"
 
-IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
+IMAGE="${REPO}:latest-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
+BUILD_IMAGE="${IMAGE}-build"
+echo "BUILD_IMAGE: ${BUILD_IMAGE}"
+
 docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION=${VERSION} \
-    -t ${IMAGE} \
+    --build-arg BASE="${BASE}" \
+    --target build \
+    -t "${BUILD_IMAGE}" \
+    .
+
+docker build \
+    --build-arg BASE="${BASE}" \
+    -t "${IMAGE}" \
     .
