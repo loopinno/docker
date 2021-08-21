@@ -21,7 +21,6 @@ if [ "$JANUS_UID" != "0" ] && [ "$USERID" = 0 ]; then
         groupmod -g "$JANUS_GID" janus
     fi
     chown janus:janus /dev/stdout /dev/stderr
-    
     exec su-exec janus "$@"
 else 
     exec "$@"
