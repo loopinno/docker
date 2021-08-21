@@ -1,7 +1,9 @@
 ARG BASE="ubuntu:18.04"
+ARG VERSION="1.0.0"
 
 FROM $BASE AS build
 ARG BASE
+ARG VERSION
 
 # install build tools and dependencies
 RUN apt-get update && \

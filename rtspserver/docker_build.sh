@@ -2,6 +2,7 @@
 
 REPO="loopinno/rtspserver"
 BASE="arm64v8/ubuntu:18.04"
+VERSION="1.0.0"
 
 function usage()
 {
@@ -10,6 +11,7 @@ Usage: $(basename $0) [options] ...
 OPTIONS:
     -h, --help                  Display this help and exit.
     -b, --base [ubuntu:18.04]   Specify the base image.
+    -v, --version [1.0.0]       Specify the version.
 EOF
 exit 0
 }
@@ -23,6 +25,9 @@ do
     -b | --base )       shift
                         BASE=$1
                         ;;
+    -v | --version )    shift
+                        VERSION=$1
+                        ;;
     *)                  usage
                         exit 1
     esac
@@ -30,8 +35,9 @@ do
 done
 
 echo "BASE: ${BASE}"
+echo "VERSION: ${VERSION}"
 
-IMAGE="${REPO}:latest-${BASE//[$'/':]/-}"
+IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
 BUILD_IMAGE="${IMAGE}-build"
@@ -39,11 +45,13 @@ echo "BUILD_IMAGE: ${BUILD_IMAGE}"
 
 docker build \
     --build-arg BASE="${BASE}" \
+    --build-arg VERSION="${VERSION}" \
     --target build \
     -t "${BUILD_IMAGE}" \
     .
 
 docker build \
     --build-arg BASE="${BASE}" \
+    --build-arg VERSION="${VERSION}" \
     -t "${IMAGE}" \
     .

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/janus"
+BASE="arm64v8/ubuntu:18.04"
 VERSION="0.11.3"
-BASE="ubuntu:18.04"
 
 function usage()
 {
@@ -10,8 +10,8 @@ cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
     -h, --help                  Display this help and exit.
-    -v, --version [0.0.0]       Specify the version of the image.
     -b, --base [ubuntu:18.04]   Specify the base image.
+    -v, --version [0.11.3]      Specify the version.
 EOF
 exit 0
 }
@@ -22,11 +22,11 @@ do
     -h | --help )       usage
                         exit
                         ;;
-    -v | --version )    shift
-                        VERSION=$1
-                        ;;
     -b | --base )       shift
                         BASE=$1
+                        ;;
+    -v | --version )    shift
+                        VERSION=$1
                         ;;
     *)                  usage
                         exit 1
@@ -34,11 +34,24 @@ do
     shift
 done
 
+echo "BASE: ${BASE}"
+echo "VERSION: ${VERSION}"
+
 IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
-echo "BASE: ${BASE}"
+
+BUILD_IMAGE="${IMAGE}-build"
+echo "BUILD_IMAGE: ${BUILD_IMAGE}"
 
 docker build \
-    --build-arg BASE=${BASE} \
-    -t ${IMAGE} \
+    --build-arg BASE="${BASE}" \
+    --build-arg VERSION="${VERSION}" \
+    --target build \
+    -t "${BUILD_IMAGE}" \
+    .
+
+docker build \
+    --build-arg BASE="${BASE}" \
+    --build-arg VERSION="${VERSION}" \
+    -t "${IMAGE}" \
     .
