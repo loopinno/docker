@@ -14,17 +14,18 @@ RUN apt-get update && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
-## rtspserver from source code 
 WORKDIR /opt
-RUN git clone --depth 1 https://github.com/loopinno/rtspserver.git && \
-    cd rtspserver && \
-    make && make install && \
-    mkdir -p /etc/rtspserver && cp *.json /etc/rtspserver/
 
 # su-exec from source code 
 RUN git clone --depth 1 https://github.com/ncopa/su-exec.git && \
     cd su-exec && \
     make && cp su-exec /usr/local/bin/
+
+## rtspserver from source code 
+RUN git clone --depth 1 https://github.com/loopinno/rtspserver.git && \
+    cd rtspserver && \
+    make && make install && \
+    mkdir -p /etc/rtspserver && cp *.json /etc/rtspserver/
 
 FROM $BASE
 
