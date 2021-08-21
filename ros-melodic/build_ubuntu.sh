@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-REPO="loopinno/opencv"
-BASE="ubuntu:18.04"
-VERSION="4.4.0"
+REPO="loopinno/ros"
+BASE="arm64v8/ubuntu:18.04"
 
 function usage()
 {
@@ -11,7 +10,6 @@ Usage: $(basename $0) [options] ...
 OPTIONS:
     -h, --help                  Display this help and exit.
     -b, --base [ubuntu:18.04]   Specify the base image.
-    -v, --version [0.0.0]       Specify the version.
 EOF
 exit 0
 }
@@ -25,9 +23,6 @@ do
     -b | --base )       shift
                         BASE=$1
                         ;;
-    -v | --version )    shift
-                        VERSION=$1
-                        ;;
     *)                  usage
                         exit 1
     esac
@@ -36,11 +31,10 @@ done
 
 echo "BASE: ${BASE}"
 
-IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
+IMAGE="${REPO}:${BASE//[$'/':]/-}"
 echo "IMAGE: ${IMAGE}"
 
 docker build \
-    --build-arg BASE=${BASE} \
-    --build-arg VERSION=${VERSION} \
-    -t ${IMAGE} \
+    --build-arg BASE="${BASE}" \
+    -t "${IMAGE}" \
     .

@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 
 REPO="loopinno/opencv"
+BASE="nvcr.io/nvidia/l4t-base:r32.4.4"
 VERSION="4.4.0"
-BASE="l4t-base:r32.4.4"
 
 function usage()
 {
 cat <<EOF
 Usage: $(basename $0) [options] ...
 OPTIONS:
-    -h, --help                      Display this help and exit.
-    -v, --version [0.0.0]           Specify the version of the image.
-    -b, --base [l4t-base:r32.4.4]   Specify the base image.
+    -h, --help                  Display this help and exit.
+    -b, --base [ubuntu:18.04]   Specify the base image.
+    -v, --version [0.0.0]       Specify the version.
 EOF
 exit 0
 }
@@ -22,11 +22,11 @@ do
     -h | --help )       usage
                         exit
                         ;;
-    -v | --version )    shift
-                        VERSION=$1
-                        ;;
     -b | --base )       shift
                         BASE=$1
+                        ;;
+    -v | --version )    shift
+                        VERSION=$1
                         ;;
     *)                  usage
                         exit 1
@@ -34,11 +34,11 @@ do
     shift
 done
 
-IMAGE="${REPO}:${VERSION}-${BASE//[$'/':]/-}"
-echo "IMAGE: ${IMAGE}"
-
-BASE="nvcr.io/nvidia/${BASE}"
 echo "BASE: ${BASE}"
+
+TAG="${BASE##*/}"
+IMAGE="${REPO}:${VERSION}-${TAG//[$'/':]/-}"
+echo "IMAGE: ${IMAGE}"
 
 docker build \
     --build-arg BASE=${BASE} \

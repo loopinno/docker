@@ -2,8 +2,7 @@ ARG BASE="ubuntu:18.04"
 ARG VERSION="4.4.0"
 ARG CUDA_ARCH_BIN="5.0,5.2,6.0,6.1,7.0,7.5,8.6"
 
-FROM $BASE AS build
-ARG BASE
+FROM $BASE
 ARG VERSION
 ARG CUDA_ARCH_BIN
 
@@ -32,6 +31,9 @@ RUN apt-get update && \
         libxvidcore-dev \
         libx264-dev \
         libv4l-dev \
+        python-pip \
+        python-dev \
+        python-numpy \
         python3-pip \
         python3-dev \
         python3-numpy \
@@ -47,6 +49,7 @@ RUN apt-get update && \
         libgstreamer-plugins-base1.0-dev \
         libgstrtspserver-1.0 \
         libgstrtspserver-1.0-dev \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* 
 
 # opencv from source code 
@@ -60,11 +63,13 @@ RUN git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
         -D OPENCV_GENERATE_PKGCONFIG=YES \
         -D OPENCV_GENERATE_SETUPVARS=NO \
         -D OPENCV_ENABLE_NONFREE:BOOL=ON \
-        -D PYTHON_EXECUTABLE=$(which python2) \
-        -D BUILD_opencv_python2=OFF \
-        -D PYTHON3_EXECUTABLE=$(which python3) \
+        -D BUILD_opencv_python2=ON \
         -D BUILD_opencv_python3=ON \
-        -D PYTHON_DEFAULT_EXECUTABLE=$(which python3) \
+        -D PYTHON_EXECUTABLE=$(which python2) \
+        -D PYTHON3_EXECUTABLE=$(which python3) \
+        -D PYTHON_DEFAULT_EXECUTABLE=$(which python2) \
+        -D PYTHON2_INCLUDE_DIR=$(python2 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
+        -D PYTHON2_PACKAGES_PATH=$(python2 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
         -D PYTHON3_INCLUDE_DIR=$(python3 -c "from distutils.sysconfig import get_python_inc; print(get_python_inc())") \
         -D PYTHON3_PACKAGES_PATH=$(python3 -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())") \
         -D WITH_CUDA=ON \
@@ -90,12 +95,7 @@ RUN git clone -b ${VERSION} --depth 1 https://github.com/opencv/opencv.git && \
         -D INSTALL_C_EXAMPLES=OFF \
         -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
         .. && \ 
-    make -j"$(nproc)" && make install && ldconfig 
+    make -j"$(nproc)" && make install && ldconfig && \
+    cd /opt && rm -rf opencv && rm -rf opencv_contrib 
 
-# FROM $BASE 
-
-# OpenCV runtime  
-RUN rm -rf opencv && \
-    rm -rf opencv_contrib 
-
-CMD ["/bin/bash"]
+CMD ["bash"]
